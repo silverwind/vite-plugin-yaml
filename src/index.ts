@@ -70,11 +70,11 @@ export default (
               : console.warn(warning.toString()),
         });
 
-      return {
-        code: `const data = ${toSource(yamlData)};\nexport default data;`,
-      };
-    }
-    return null;
-  },
+        return {
+          code: `const data = ${toSource(yamlData)};\nexport default data;`,
+        };
+      }
+      return null;
+    },
   };
 };
