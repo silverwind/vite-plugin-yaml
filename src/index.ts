@@ -41,30 +41,34 @@ const yamlExtension = /\.ya?ml$/;
  * Transform YAML files to JS objects.
  */
 export default (
-  options: PluginOptions = { schema: DEFAULT_SCHEMA }
-): Plugin => ({
-  name: 'vite:transform-yaml',
+  options: PluginOptions = {}
+): Plugin => {
+  // Apply default schema if not provided
+  const schema = options.schema ?? DEFAULT_SCHEMA;
 
-  async transform(code: string, id: string) {
-    if (yamlExtension.test(id)) {
-      // Filters the filesystem for files to include/exclude. Includes all files by default.
-      const filter = createFilter(options.include, options.exclude);
+  return {
+    name: 'vite:transform-yaml',
 
-      if (!filter(id)) {
-        return null;
-      }
+    async transform(code: string, id: string) {
+      if (yamlExtension.test(id)) {
+        // Filters the filesystem for files to include/exclude. Includes all files by default.
+        const filter = createFilter(options.include, options.exclude);
 
-      /**
-       * Transforms file to JS object with customizable schema and error reporting.
-       */
-      const yamlData = load(code, {
-        filename: id,
-        schema: options.schema,
-        onWarning: (warning: YAMLException) =>
-          options?.onWarning && typeof options.onWarning === 'function'
-            ? options.onWarning(warning)
-            : console.warn(warning.toString()),
-      });
+        if (!filter(id)) {
+          return null;
+        }
+
+        /**
+         * Transforms file to JS object with customizable schema and error reporting.
+         */
+        const yamlData = load(code, {
+          filename: id,
+          schema,
+          onWarning: (warning: YAMLException) =>
+            options?.onWarning && typeof options.onWarning === 'function'
+              ? options.onWarning(warning)
+              : console.warn(warning.toString()),
+        });
 
       return {
         code: `const data = ${toSource(yamlData)};\nexport default data;`,
@@ -72,4 +76,5 @@ export default (
     }
     return null;
   },
-});
+  };
+};
