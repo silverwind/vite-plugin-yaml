@@ -65,7 +65,7 @@ export default (
           filename: id,
           schema,
           onWarning: (warning: YAMLException) =>
-            options?.onWarning && typeof options.onWarning === 'function'
+            options.onWarning && typeof options.onWarning === 'function'
               ? options.onWarning(warning)
               : console.warn(warning.toString()),
         });
